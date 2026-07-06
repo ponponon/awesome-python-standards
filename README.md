@@ -1,19 +1,16 @@
 # Awesome Python Standards
 
-一个通用的 Python 后端开发规范 Agent Skill，适用于各种 AI 编码助手。
+一个通用的 Python 开发规范 Agent Skill，适用于各种 AI 编码助手。
 
 ## 概述
 
-Awesome Python Standards 是一个 Agent Skill，为 AI 编码助手提供 Python 后端开发的最佳实践和规范。它包含：
+Awesome Python Standards 是一个 Agent Skill，为 AI 编码助手提供 Python 开发的最佳实践和规范。它包含：
 
 - **类型注解规范** - Python 3.10+ 现代语法
 - **Pydantic 数据建模** - V2 模式和验证器
-- **FastAPI 开发模式** - 路由、响应、依赖注入
-- **ORM 使用约定** - SQLModel、SQLAlchemy、Peewee
-- **Redis 高级模式** - 限流器、布隆过滤器、多数据库分离
-- **API 分页响应** - 通用分页模式和类型安全
-- **项目组织结构** - 目录划分、配置管理
+- **代码风格** - 日志、路径处理、哈希生成
 - **代码质量工具** - Ruff、mypy、pytest
+- **最佳实践** - 依赖管理、项目组织
 
 ## 快速开始
 
