@@ -14,7 +14,11 @@
   "scripts": {
     "build": "cd cli && bun run build",
     "dev": "cd cli && bun run dev",
-    "test": "echo \"No tests yet\""
+    "test": "echo \"No tests yet\"",
+    "version:patch": "npm version patch --no-git-tag-version && cd cli && npm version patch --no-git-tag-version",
+    "version:minor": "npm version minor --no-git-tag-version && cd cli && npm version minor --no-git-tag-version",
+    "version:major": "npm version major --no-git-tag-version && cd cli && npm version major --no-git-tag-version",
+    "publish": "cd cli && npm publish --registry https://registry.npmjs.org/"
   },
   "keywords": [
     "python",

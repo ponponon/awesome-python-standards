@@ -2,131 +2,131 @@
 
 # Awesome Python Standards 🐍
 
-**一个专为 AI 编码助手定制的现代 Python 高标准开发规范 Agent Skill**
+**A modern Python high-standard development specification Agent Skill tailored for AI coding assistants**
 
-[![NPM Version](https://img.shields.io/npm/v/awesome-python-standards-cli?color=3B82F6&style=flat-衰减)](https://www.npmjs.com/package/awesome-python-standards-cli)
-[![GitHub License](https://img.shields.io/github/license/ponponon/awesome-python-standards?color=10B981&style=flat-衰减)](LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-ffd43b?style=flat-衰减&logo=python)](https://www.python.org)
-[![Awesome Skills](https://img.shields.io/badge/agent--skills-compatible-6366f1?style=flat-衰减)](https://agentskills.io)
+[![NPM Version](https://img.shields.io/npm/v/awesome-python-standards-cli?color=3B82F6&style=flat-square)](https://www.npmjs.com/package/awesome-python-standards-cli)
+[![GitHub License](https://img.shields.io/github/license/ponponon/awesome-python-standards?color=10B981&style=flat-square)](LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-ffd43b?style=flat-square&logo=python)](https://www.python.org)
+[![Awesome Skills](https://img.shields.io/badge/agent--skills-compatible-6366f1?style=flat-square)](https://agentskills.io)
 
 <p align="center">
-  让 AI 助理（Claude Code, OpenCode, Cursor, Codex）瞬间拥有 2026 年现代 Python 顶级专家的编写直觉。
+  Give AI assistants (Claude Code, OpenCode, Cursor, Codex) instant intuition for writing 2026 modern Python at expert level.
   <br />
-  <strong>告别过时的类型语法，拥抱安全、优雅、健壮的生产级代码！</strong>
+  <strong>Say goodbye to outdated type syntax, embrace safe, elegant, and robust production-grade code!</strong>
 </p>
 
 ---
 
-[核心内容](#-核心内容) • [快速开始](#-快速开始) • [核心原则对比](#-核心原则对比) • [多平台配置](#-多平台配置) • [版本声明](#-python-版本提醒)
+[Core Content](#-core-content) • [Quick Start](#-quick-start) • [Core Principles Comparison](#-core-principles-comparison) • [Multi-platform Configuration](#-multi-platform-configuration) • [Version Notice](#-python-version-notice)
 
 </div>
 
 ---
 
-## 💡 核心内容
+## 💡 Core Content
 
-* 🏷️ **现代类型注解 (Typing Hints)** — 强制使用 Python 3.10+ 原生语法，彻底告别过时的 `Optional`、`List`、`Dict` 导入。
-* 🛡️ **Pydantic 数据验证** — 引导 AI 用 Pydantic 替代没有验证能力的 `dataclass` 和原生 `dict`，守住动态语言的防线。
-* 📦 **规范虚拟环境** — 规范依赖安装流程，坚决不使用全局 `pip`，优先使用 `pipenv`、`poetry` 等虚拟环境进行沙盒隔离。
-* 📝 **FastAPI 生产级文档** — 约束 AI 生成的每个接口都必须写明 `summary`、`description`、参数描述及 `APIRouter` 的 `tags` 分组。
-* 🪵 **Loguru 现代日志** — 淘汰配置复杂的内置 `logging` 和简陋的 `print`，使用开箱即用、异常自动格式化的 `loguru`。
+* 🏷️ **Modern Type Annotations (Typing Hints)** — Enforce Python 3.10+ native syntax, completely eliminating outdated `Optional`, `List`, `Dict` imports.
+* 🛡️ **Pydantic Data Validation** — Guide AI to use Pydantic instead of validation-incapable `dataclass` and native `dict`, guarding the defense line of dynamic languages.
+* 📦 **Standardized Virtual Environment** — Standardize dependency installation process, never use global `pip`, prioritize virtual environment sandboxing with `pipenv`, `poetry`, etc.
+* 📝 **FastAPI Production-level Documentation** — Constrain AI to write `summary`, `description`, parameter descriptions, and `APIRouter` `tags` grouping for every endpoint.
+* 🪵 **Loguru Modern Logging** — Replace complex built-in `logging` configuration and crude `print` with out-of-the-box, automatic exception formatting `loguru`.
 
 ---
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-可以通过我们发布的官方 NPM 脚手架一键获取针对各个 AI 助手的极速配置与集成：
+You can instantly obtain rapid configuration and integration for various AI assistants through our official NPM scaffold:
 
 ```bash
-# 挂载你的网络代理运行初始化脚手架
+# Run initialization scaffold with your network proxy
 npx awesome-python-standards-cli init
 ```
 
-*（该脚手架将引导你选择当前使用的 AI 编码助手，并提供针对该平台的秒级配置和指令引导）*
+*(The scaffold will guide you to select your current AI coding assistant and provide platform-specific second-level configuration and instruction guidance)*
 
 ---
 
-## ⚖️ 核心原则对比
+## ⚖️ Core Principles Comparison
 
-在加载此 Skill 后，AI 将展现出截然不同的代码品味：
+After loading this Skill, AI will exhibit completely different code taste:
 
-### 1. 现代类型注解
+### 1. Modern Type Annotations
 
-* ❌ **过时写法 (废弃)**
+* ❌ **Outdated Syntax (Deprecated)**
   ```python
   from typing import List, Optional
   
   def get_users(limit: int) -> Optional[List[User]]:
       pass
   ```
-* ✅ **现代写法 (推荐)**
+* ✅ **Modern Syntax (Recommended)**
   ```python
   def get_users(limit: int) -> list[User] | None:
       pass
   ```
 
-### 2. Pydantic 运行时数据校验
+### 2. Pydantic Runtime Data Validation
 
-* ❌ **无验证写法 (高危)**
+* ❌ **No Validation Syntax (High Risk)**
   ```python
   from dataclasses import dataclass
   
   @dataclass
   class User:
       name: str
-      age: int  # 传入 age=-500 无法被拦截，埋下隐患
+      age: int  # Passing age=-500 cannot be intercepted, leaving hidden dangers
   ```
-* ✅ **Pydantic 验证写法 (安全)**
+* ✅ **Pydantic Validation Syntax (Safe)**
   ```python
   from pydantic import BaseModel, Field
   
   class User(BaseModel):
-      name: str = Field(..., description="用户名，必填")
-      age: int = Field(..., ge=0, le=150, description="年龄，必须在 0 到 150 之间")
+      name: str = Field(..., description="Username, required")
+      age: int = Field(..., ge=0, le=150, description="Age, must be between 0 and 150")
   ```
 
-### 3. 依赖及虚拟环境隔离
+### 3. Dependency and Virtual Environment Isolation
 
-* ❌ **全局安装 (高污染)**
+* ❌ **Global Installation (High Pollution)**
   ```bash
   pip install fastapi pydantic loguru
   python main.py
   ```
-* ✅ **虚拟环境隔离 (高隔离)**
+* ✅ **Virtual Environment Isolation (High Isolation)**
   ```bash
   pipenv install fastapi pydantic loguru
   pipenv run python main.py
   ```
 
-### 4. FastAPI 规范自文档化
+### 4. FastAPI Specification Self-documentation
 
-* ❌ **裸接口定义 (不规范)**
+* ❌ **Bare Endpoint Definition (Non-standard)**
   ```python
   @router.get('/users')
   async def get_user_list(page: int = 1):
       pass
   ```
-* ✅ **规范化接口定义 (高可读)**
+* ✅ **Standardized Endpoint Definition (High Readability)**
   ```python
   @router.get(
       '/users',
-      summary="获取用户列表",
-      description="分页查询系统用户。支持根据激活状态进行条件过滤。",
+      summary="Get user list",
+      description="Query system users with pagination. Supports conditional filtering by activation status.",
       response_model=list[UserResponse]
   )
   async def get_user_list(
-      page: int = Query(1, ge=1, description="页码，从 1 开始"),
+      page: int = Query(1, ge=1, description="Page number, starting from 1"),
   ):
       pass
   ```
 
-### 5. 现代结构化日志
+### 5. Modern Structured Logging
 
-* ❌ **简陋调试 (难反查)**
+* ❌ **Crude Debugging (Hard to Trace)**
   ```python
   print(f"User login failed: {user_id}")
   ```
-* ✅ **Loguru 结构化日志 (彩色、带堆栈)**
+* ✅ **Loguru Structured Logging (Colored, with Stack Trace)**
   ```python
   from loguru import logger
   
@@ -135,18 +135,18 @@ npx awesome-python-standards-cli init
 
 ---
 
-## 🛠️ 多平台配置
+## 🛠️ Multi-platform Configuration
 
-你可以直接在你的 AI 工具中无缝集成并加载此规范：
+You can seamlessly integrate and load this specification directly in your AI tools:
 
 ### 🤖 Claude Code
-在你的项目根目录下执行安装命令：
+Execute the installation command in your project root directory:
 ```bash
 /plugin install awesome-python-standards@git+https://github.com/ponponon/awesome-python-standards.git
 ```
 
 ### 💻 OpenCode
-在项目的 `opencode.json` 中配置插件源：
+Configure the plugin source in your project's `opencode.json`:
 ```json
 {
   "plugin": ["awesome-python-standards@git+https://github.com/ponponon/awesome-python-standards.git"]
@@ -154,30 +154,30 @@ npx awesome-python-standards-cli init
 ```
 
 ### 🧭 Cursor / Trae / Windsurf / CodeBuddy
-直接在 AI 聊天框中告诉你的助理：
+Directly tell your assistant in the AI chat box:
 > `/add-plugin awesome-python-standards`
 > 
-> 或者：
-> *"请加载 Awesome Python Standards 规范，帮我按照现代 Python 高标准开发规范写代码。"*
+> Or:
+> *"Please load the Awesome Python Standards specification and help me write code according to modern Python high-standard development specifications."*
 
 ---
 
-## ⚠️ Python 版本提醒
+## ⚠️ Python Version Notice
 
-本规范完全建立在 **Python 3.10+** 的现代标准之上。如果你或你的项目仍在运行旧版本，请注意：
+This specification is entirely built on the modern standards of **Python 3.10+**. If you or your project is still running older versions, please note:
 
-* 🚫 **Python 3.9** 官方已于 **2025 年 10 月** 停止全部安全和版本维护。
-* 🚫 **Python 3.10** 官方亦将于 **2026 年 10 月** 停止支持。
-* 💡 强烈建议将底层 CPython 升级至 **3.11 或 3.12**，不仅能无缝使用 `X | Y`、`list[T]` 等现代类型体系，还将获得 **20%~60% 的运行时性能提升**。
+* 🚫 **Python 3.9** officially ceased all security and version maintenance in **October 2025**.
+* 🚫 **Python 3.10** will also cease support in **October 2026**.
+* 💡 It is strongly recommended to upgrade the underlying CPython to **3.11 or 3.12**, which not only enables seamless use of modern type systems like `X | Y`, `list[T]`, but also provides **20%~60% runtime performance improvement**.
 
 ---
 
-## 🤝 参与贡献
+## 🤝 Contributing
 
-我们非常欢迎来自社区的提议和改进：
-- 如果你发现了新的现代 Python 用法、规范或反模式，请提交 [Issue](https://github.com/ponponon/awesome-python-standards/issues) 进行讨论。
-- 欢迎提交 [Pull Request](https://github.com/ponponon/awesome-python-standards/pulls) 完善最佳实践！
+We warmly welcome suggestions and improvements from the community:
+- If you discover new modern Python usage, specifications, or anti-patterns, please submit an [Issue](https://github.com/ponponon/awesome-python-standards/issues) for discussion.
+- Welcome to submit [Pull Requests](https://github.com/ponponon/awesome-python-standards/pulls) to improve best practices!
 
-## 📄 许可证
+## 📄 License
 
-基于 [MIT License](LICENSE) 许可协议开源。
+Open-sourced under the [MIT License](LICENSE).
