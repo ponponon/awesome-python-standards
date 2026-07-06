@@ -1,6 +1,6 @@
 ---
 name: awesome-python-standards
-description: 当编写 Python 代码时使用 - 包含类型注解规范、Pydantic 数据建模、FastAPI 开发模式、ORM 使用约定和项目组织最佳实践
+description: 当编写 Python 代码时使用 - 包含类型注解规范、Pydantic 数据建模、FastAPI 开发模式、ORM 使用约定、Redis 高级模式（限流器/布隆过滤器）、API 分页响应、项目组织最佳实践
 ---
 
 # Python 后端开发规范
@@ -805,3 +805,417 @@ async def transfer_money(
 - 更好的 IDE 支持和自动补全
 - 可维护的配置管理
 - 类型安全的数据流转
+
+---
+
+## 高级模式
+
+### 时间常量定义
+
+```python
+# constants.py
+SECOND: int = 1
+MINUTE: int = SECOND * 60
+HOUR: int = MINUTE * 60
+DAY: int = HOUR * 24
+WEEK: int = DAY * 7
+MONTH: int = DAY * 30
+
+# 使用示例
+cache_ttl: int = 3 * HOUR  # 3小时过期
+```
+
+**优点：**
+- 代码更可读：`3 * HOUR` 比 `10800` 更清晰
+- 统一管理：修改时间单位只需改一处
+- 减少错误：避免手动计算秒数
+
+### Redis 多数据库分离
+
+```python
+# core/redis/models.py
+import redis
+import settings
+
+# 主客户端
+client = redis.Redis(
+    host=settings.REDIS_CONFIG.host,
+    port=settings.REDIS_CONFIG.port,
+    db=settings.REDIS_CONFIG.db,
+    password=settings.REDIS_CONFIG.password
+)
+
+# 缓存过滤器（使用 db+1）
+client_cache_filter = redis.Redis(
+    host=settings.REDIS_CONFIG.host,
+    port=settings.REDIS_CONFIG.port,
+    db=settings.REDIS_CONFIG.db + 1,
+    password=settings.REDIS_CONFIG.password
+)
+
+# 限流器（使用 db+2）
+client_rate_limit = redis.Redis(
+    host=settings.REDIS_CONFIG.host,
+    port=settings.REDIS_CONFIG.port,
+    db=settings.REDIS_CONFIG.db + 2,
+    password=settings.REDIS_CONFIG.password,
+    decode_responses=True  # 自动解码为字符串
+)
+```
+
+**优点：**
+- 逻辑隔离：不同功能使用不同数据库
+- 独立清理：可以单独清理某个功能的数据
+- 避免冲突：不同功能的 key 不会互相干扰
+
+### Redis 布隆过滤器模式
+
+```python
+from core.redis.models import client_cache_filter
+
+def check_and_set_cache(
+    cache_key: str,
+    cache_ttl: int
+) -> bool:
+    """
+    检查缓存是否已存在，不存在则设置
+    
+    Args:
+        cache_key: 缓存 key
+        cache_ttl: 缓存过期时间（秒）
+    
+    Returns:
+        True: 缓存已存在（应跳过）
+        False: 缓存不存在（已设置）
+    """
+    # 使用 set nx 实现原子性的检查并设置
+    created = client_cache_filter.set(
+        cache_key,
+        "1",
+        nx=True,
+        ex=cache_ttl
+    )
+    # set 返回 True 表示设置成功（不存在）
+    # set 返回 None 表示设置失败（已存在）
+    return not bool(created)
+```
+
+**使用场景：**
+- 任务去重：避免重复处理同一个任务
+- 接口幂等：确保接口多次调用结果一致
+- 限流：限制某个操作的频率
+
+### Redis 限流器
+
+```python
+import time
+from fastapi import Request, HTTPException
+from core.redis.models import client_rate_limit
+from loguru import logger
+
+
+class RateLimiter:
+    """
+    基于 Redis 的固定窗口限流器
+    """
+    def __init__(self, requests: int, window: int):
+        """
+        Args:
+            requests: 窗口内允许的最大请求数
+            window: 时间窗口大小（秒）
+        """
+        self.requests = requests
+        self.window = window
+
+    async def __call__(self, request: Request):
+        # 获取客户端 IP
+        client_ip = request.client.host if request.client else "unknown"
+        forwarded_for = request.headers.get("X-Forwarded-For")
+        if forwarded_for:
+            client_ip = forwarded_for.split(",")[0].strip()
+
+        # 获取当前时间窗口的标识
+        current_window = int(time.time() // self.window)
+        
+        # 构造 Redis Key
+        api_path = request.url.path
+        redis_key = f"rate_limit:{api_path}:{client_ip}:{current_window}"
+
+        try:
+            # 使用 INCR 增加计数
+            current_count = client_rate_limit.incr(redis_key)
+            
+            # 如果是第一次访问，设置过期时间
+            if current_count == 1:
+                client_rate_limit.expire(redis_key, self.window + 2)
+                
+            # 判断是否超过限制
+            if current_count > self.requests:
+                logger.warning(
+                    f"Rate limit exceeded for IP {client_ip} on {api_path}. "
+                    f"Limit: {self.requests}/{self.window}s"
+                )
+                raise HTTPException(
+                    status_code=429,
+                    detail=f"请求过于频繁，请稍后再试。限制: {self.requests} 次 / {self.window} 秒"
+                )
+        except HTTPException:
+            raise
+        except Exception as e:
+            # Redis 异常时放行，避免影响核心业务
+            logger.error(f"Rate limiter redis error: {e}")
+            pass
+
+
+# 使用示例
+from fastapi import APIRouter, Depends
+
+router = APIRouter()
+rate_limiter = RateLimiter(requests=100, window=60)  # 100次/分钟
+
+@router.get("/api/data", dependencies=[Depends(rate_limiter)])
+async def get_data():
+    return {"data": "value"}
+```
+
+### API 响应分页模式
+
+```python
+from pydantic import BaseModel, Field
+from typing import Generic, TypeVar
+
+T = TypeVar('T')
+
+
+class PaginationParams(BaseModel):
+    """分页参数"""
+    page: int = Field(1, ge=1, description='页码')
+    page_size: int = Field(20, ge=1, le=100, description='每页数量')
+    
+    @property
+    def offset(self) -> int:
+        return (self.page - 1) * self.page_size
+    
+    @property
+    def limit(self) -> int:
+        return self.page_size
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    """分页响应"""
+    items: list[T] = Field([], description='数据列表')
+    total: int = Field(0, description='总记录数')
+    page: int = Field(1, description='当前页码')
+    page_size: int = Field(20, description='每页数量')
+    
+    @property
+    def total_pages(self) -> int:
+        return (self.total + self.page_size - 1) // self.page_size
+    
+    @property
+    def has_next(self) -> bool:
+        return self.page < self.total_pages
+    
+    @property
+    def has_prev(self) -> bool:
+        return self.page > 1
+
+
+# 使用示例
+class UserResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+
+
+class UserListResponse(PaginatedResponse[UserResponse]):
+    """用户列表响应"""
+    pass
+
+
+# 在 API 中使用
+from fastapi import APIRouter, Query
+
+router = APIRouter()
+
+@router.get("/users", response_model=UserListResponse)
+async def get_users(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100)
+):
+    # 查询数据
+    total = await count_users()
+    users = await get_users_paginated(
+        offset=(page - 1) * page_size,
+        limit=page_size
+    )
+    
+    return UserListResponse(
+        items=users,
+        total=total,
+        page=page,
+        page_size=page_size
+    )
+```
+
+### 字符串工具函数
+
+```python
+# utils/string_util.py
+import re
+import emoji
+
+
+def remove_punctuation_space_and_emoji(text: str) -> str:
+    """去除标点符号、空格和 emoji"""
+    # 去除标点符号和空格
+    text = re.sub(r'[^\w]', '', text)
+    # 去除 emoji
+    text = emoji.replace_emoji(text, replace='')
+    return text
+
+
+def weighted_length(s: str) -> int:
+    """
+    计算加权长度：中文/全角字符算 2，其他（英文、数字、空格等）算 1
+    
+    用途：判断字符串显示长度时使用
+    """
+    length = 0
+    for char in s:
+        # 判断是否为中文字符或全角符号
+        if ('\u4e00' <= char <= '\u9fff' or 
+            '\uff00' <= char <= '\uffef' or 
+            char in '。，？！；："''（）【】《》'):
+            length += 2
+        else:
+            length += 1
+    return length
+
+
+def truncate_with_ellipsis(text: str, max_length: int, ellipsis: str = '...') -> str:
+    """
+    截断字符串并添加省略号
+    
+    Args:
+        text: 原始字符串
+        max_length: 最大长度（包含省略号）
+        ellipsis: 省略号字符串
+    
+    Returns:
+        截断后的字符串
+    """
+    if len(text) <= max_length:
+        return text
+    return text[:max_length - len(ellipsis)] + ellipsis
+```
+
+### 配置映射模式
+
+```python
+# settings.py
+from typing import Literal
+
+# 域名到解析器的映射
+domain_mapping_parser_name: dict[str, str] = {
+    'weibo.com': 'weibo',
+    'v.qq.com': 'v.qq.com',
+    'www.xiaohongshu.com': 'www.xiaohongshu.com',
+    'www.bilibili.com': 'www.bilibili.com',
+    'haokan.baidu.com': 'haokan.baidu.com',
+    'www.kuaishou.com': 'www.kuaishou.com',
+    'v.youku.com': 'www.youku.com',
+    'www.iqiyi.com': 'www.iqiyi.com',
+}
+
+# 域名到网站ID的映射
+domain_mapping_tracking_website_id: dict[str, int] = {
+    'v.youku.com': 11,
+    'www.youku.com': 11,
+    'weibo.com': 802,
+    'www.douyin.com': 64849,
+    'www.kuaishou.com': 65134,
+    'www.xiaohongshu.com': 65140,
+    'www.bilibili.com': 62307,
+    'haokan.baidu.com': 64450,
+}
+
+
+def get_parser_name(domain: str) -> str:
+    """获取域名对应的解析器名称"""
+    return domain_mapping_parser_name.get(domain, 'common')
+
+
+def get_website_id(domain: str) -> int | None:
+    """获取域名对应的网站ID"""
+    return domain_mapping_tracking_website_id.get(domain)
+```
+
+**优点：**
+- 集中管理：所有映射关系在一个地方定义
+- 易于维护：添加新映射只需修改字典
+- 类型安全：使用类型注解明确映射关系
+
+### CRUD 操作封装
+
+```python
+# core/redis/crud.py
+from core.redis.models import client
+from typing import Literal
+
+
+def get_or_create(
+    event_type: str,
+    resource_id: str,
+    ttl: int = 300
+) -> tuple[str, bool]:
+    """
+    原子性地检查并设置缓存
+    
+    Args:
+        event_type: 事件类型
+        resource_id: 资源ID
+        ttl: 过期时间（秒）
+    
+    Returns:
+        (resource_id, exists)
+        - resource_id: 资源ID
+        - exists: 是否已存在（True=已存在，False=新创建）
+    """
+    cache_key = f'{event_type}:{resource_id}'
+    created = client.set(cache_key, "1", nx=True, ex=ttl)
+    return resource_id, not bool(created)
+
+
+def delete_key(event_type: str, resource_id: str) -> bool:
+    """
+    删除缓存键
+    
+    Args:
+        event_type: 事件类型
+        resource_id: 资源ID
+    
+    Returns:
+        True: 删除成功
+        False: 键不存在
+    """
+    cache_key = f'{event_type}:{resource_id}'
+    result = client.delete(cache_key)
+    return result == 1
+
+
+def exists(event_type: str, resource_id: str) -> bool:
+    """
+    检查键是否存在
+    
+    Args:
+        event_type: 事件类型
+        resource_id: 资源ID
+    
+    Returns:
+        True: 存在
+        False: 不存在
+    """
+    cache_key = f'{event_type}:{resource_id}'
+    return bool(client.exists(cache_key))
+```

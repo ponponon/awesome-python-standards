@@ -10,6 +10,8 @@ Awesome Python Standards 是一个 Agent Skill，为 AI 编码助手提供 Pytho
 - **Pydantic 数据建模** - V2 模式和验证器
 - **FastAPI 开发模式** - 路由、响应、依赖注入
 - **ORM 使用约定** - SQLModel、SQLAlchemy、Peewee
+- **Redis 高级模式** - 限流器、布隆过滤器、多数据库分离
+- **API 分页响应** - 通用分页模式和类型安全
 - **项目组织结构** - 目录划分、配置管理
 - **代码质量工具** - Ruff、mypy、pytest
 
