@@ -1,0 +1,45 @@
+{
+  "name": "awesome-python-standards",
+  "version": "1.0.0",
+  "description": "Python 后端开发规范 Agent Skill - 类型注解、Pydantic 数据建模、FastAPI 开发模式、ORM 使用约定",
+  "type": "module",
+  "main": "skills/awesome-python-standards/SKILL.md",
+  "files": [
+    "skills/",
+    ".claude-plugin/",
+    ".codex-plugin/",
+    ".cursor-plugin/",
+    ".opencode/"
+  ],
+  "scripts": {
+    "build": "cd cli && bun run build",
+    "dev": "cd cli && bun run dev",
+    "test": "echo \"No tests yet\""
+  },
+  "keywords": [
+    "python",
+    "typing",
+    "pydantic",
+    "fastapi",
+    "sqlmodel",
+    "agent-skill",
+    "claude",
+    "cursor",
+    "opencode",
+    "codex",
+    "gemini",
+    "ai",
+    "coding-standards",
+    "best-practices"
+  ],
+  "author": "ponponon <1729303158@qq.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/ponponon/awesome-python-standards",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ponponon/awesome-python-standards.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ponponon/awesome-python-standards/issues"
+  }
+}

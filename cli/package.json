@@ -1,0 +1,45 @@
+{
+  "name": "awesome-python-standards-cli",
+  "version": "1.0.0",
+  "description": "CLI to install Awesome Python Standards skill for AI coding assistants",
+  "type": "module",
+  "bin": {
+    "aps": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target node",
+    "dev": "bun run src/index.ts",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "python",
+    "typing",
+    "pydantic",
+    "fastapi",
+    "sqlmodel",
+    "claude",
+    "cursor",
+    "opencode",
+    "codex",
+    "gemini",
+    "ai",
+    "skill"
+  ],
+  "author": "ponponon",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "chalk": "^5.3.0",
+    "ora": "^8.1.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.14",
+    "@types/node": "^22.10.1",
+    "@types/prompts": "^2.4.9",
+    "typescript": "^5.7.2"
+  }
+}

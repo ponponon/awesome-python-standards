@@ -1,0 +1,23 @@
+{
+  "name": "awesome-python-standards",
+  "displayName": "Awesome Python Standards",
+  "description": "Python 后端开发规范：类型注解、Pydantic 数据建模、FastAPI 开发模式、ORM 使用约定",
+  "version": "1.0.0",
+  "author": {
+    "name": "ponponon",
+    "email": "1729303158@qq.com"
+  },
+  "homepage": "https://github.com/ponponon/awesome-python-standards",
+  "repository": "https://github.com/ponponon/awesome-python-standards",
+  "license": "MIT",
+  "keywords": [
+    "python",
+    "typing",
+    "pydantic",
+    "fastapi",
+    "sqlmodel",
+    "best-practices",
+    "coding-standards"
+  ],
+  "skills": "./skills/"
+}
