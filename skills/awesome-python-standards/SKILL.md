@@ -1129,7 +1129,7 @@ domain_mapping_parser_name: dict[str, str] = {
 }
 
 # 域名到网站ID的映射
-domain_mapping_tracking_website_id: dict[str, int] = {
+domain_mapping_website_id: dict[str, int] = {
     'v.youku.com': 11,
     'www.youku.com': 11,
     'weibo.com': 802,
@@ -1148,7 +1148,7 @@ def get_parser_name(domain: str) -> str:
 
 def get_website_id(domain: str) -> int | None:
     """获取域名对应的网站ID"""
-    return domain_mapping_tracking_website_id.get(domain)
+    return domain_mapping_website_id.get(domain)
 ```
 
 **优点：**
