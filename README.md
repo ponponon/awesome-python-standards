@@ -6,6 +6,7 @@
 
 - **类型注解规范** - 强制使用 Python 3.10+ 现代语法，告别 `Optional`、`List`、`Dict`
 - **Pydantic 数据验证** - 用 Pydantic 替代 dataclass，获得运行时验证能力
+- **虚拟环境规范** - 使用 pipenv/venv/poetry 管理依赖，不要用全局 pip
 - **FastAPI 最佳实践** - 每个接口都要写清楚 summary、description、tags
 - **Loguru 日志** - 替代内置 logging，更易用、更强大
 
@@ -86,7 +87,23 @@ class User:
     age: int  # 可以传入负数
 ```
 
-### 3. FastAPI 接口要写清楚文档
+### 3. 使用虚拟环境
+
+```bash
+# ✅ 正确 - 用 pipenv 安装
+pipenv install pydantic loguru
+
+# ❌ 错误 - 用全局 pip 安装
+pip install pydantic loguru
+
+# ✅ 正确 - 用 pipenv run 运行
+pipenv run python main.py
+
+# ❌ 错误 - 直接运行
+python main.py
+```
+
+### 4. FastAPI 接口要写清楚文档
 
 ```python
 # ✅ 正确
@@ -102,7 +119,7 @@ async def list_users(page: int = 1):
     pass
 ```
 
-### 4. 用 loguru 替代 print
+### 5. 用 loguru 替代 print
 
 ```python
 # ✅ 正确

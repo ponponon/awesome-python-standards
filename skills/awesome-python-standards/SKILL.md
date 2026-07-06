@@ -347,6 +347,171 @@ except ValidationError as e:
 
 ---
 
+## 虚拟环境规范
+
+### 为什么用虚拟环境？
+
+**永远不要用全局 pip 安装第三方库！** 原因：
+
+- 不同项目可能依赖同一个库的不同版本
+- 全局安装会污染系统 Python 环境
+- 虚拟环境可以隔离依赖，避免冲突
+
+### 安装第三方库前的检查流程
+
+**在安装任何第三方库（如 pydantic、loguru、fastapi）之前，必须先检查虚拟环境：**
+
+```
+1. 检查当前是否在虚拟环境中
+   - 是 → 直接安装
+   - 否 → 继续下一步
+
+2. 检查项目是否有虚拟环境配置文件（Pipfile、pyproject.toml、requirements.txt）
+   - 有 Pipfile → 使用 pipenv
+   - 有 pyproject.toml → 使用 poetry 或 pip
+   - 有 requirements.txt → 使用 pip + venv
+   - 都没有 → 创建虚拟环境
+```
+
+### 使用 Pipenv（推荐）
+
+```bash
+# 1. 检查是否安装了 pipenv
+which pipenv
+
+# 2. 如果没有安装，先安装 pipenv
+pip install pipenv
+
+# 3. 初始化虚拟环境（在项目根目录）
+pipenv install
+
+# 4. 安装第三方库（生产依赖）
+pipenv install pydantic loguru fastapi
+
+# 5. 安装第三方库（开发依赖）
+pipenv install --dev mypy ruff pytest
+
+# 6. 在虚拟环境中运行命令
+pipenv run python main.py
+pipenv run pytest
+pipenv run mypy .
+
+# 7. 激活虚拟环境（可选，也可以用 pipenv run）
+pipenv shell
+```
+
+### 使用 venv（内置）
+
+```bash
+# 1. 创建虚拟环境
+python -m venv .venv
+
+# 2. 激活虚拟环境
+# macOS/Linux
+source .venv/bin/activate
+# Windows
+.venv\Scripts\activate
+
+# 3. 安装第三方库
+pip install pydantic loguru fastapi
+
+# 4. 生成 requirements.txt
+pip freeze > requirements.txt
+
+# 5. 从 requirements.txt 安装
+pip install -r requirements.txt
+```
+
+### 使用 Poetry
+
+```bash
+# 1. 安装 poetry
+curl -sSL https://install.python-poetry.org | python3 -
+
+# 2. 初始化项目
+poetry init
+
+# 3. 安装第三方库
+poetry add pydantic loguru fastapi
+
+# 4. 安装开发依赖
+poetry add --group dev mypy ruff pytest
+
+# 5. 运行命令
+poetry run python main.py
+poetry run pytest
+```
+
+### 常见错误
+
+```bash
+# ❌ 错误 - 直接用全局 pip 安装
+pip install pydantic
+
+# ✅ 正确 - 用 pipenv 安装
+pipenv install pydantic
+
+# ✅ 正确 - 用 pipenv run 运行
+pipenv run python main.py
+
+# ❌ 错误 - 直接运行（可能不在虚拟环境中）
+python main.py
+```
+
+### 检查当前虚拟环境
+
+```bash
+# 检查当前 Python 路径
+which python
+# 应该输出类似：/Users/xxx/.local/share/virtualenvs/project-xxx/bin/python
+# 而不是：/usr/bin/python
+
+# 检查 pip 路径
+which pip
+# 应该输出类似：/Users/xxx/.local/share/virtualenvs/project-xxx/bin/pip
+# 而不是：/usr/local/bin/pip
+
+# 检查是否在虚拟环境中
+pipenv --venv
+# 如果输出路径，说明在虚拟环境中
+# 如果报错，说明不在虚拟环境中
+```
+
+### Pipfile 示例
+
+```toml
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pydantic = "*"
+loguru = "*"
+fastapi = "*"
+uvicorn = "*"
+
+[dev-packages]
+mypy = "*"
+ruff = "*"
+pytest = "*"
+
+[requires]
+python_version = "3.10"
+```
+
+### 最佳实践总结
+
+| 场景 | 正确做法 | 错误做法 |
+|------|----------|----------|
+| 安装库 | `pipenv install pydantic` | `pip install pydantic` |
+| 运行脚本 | `pipenv run python main.py` | `python main.py` |
+| 运行测试 | `pipenv run pytest` | `pytest` |
+| 类型检查 | `pipenv run mypy .` | `mypy .` |
+| 激活环境 | `pipenv shell` | 直接用系统 Python |
+
+---
+
 ## FastAPI 规范
 
 ### 核心原则

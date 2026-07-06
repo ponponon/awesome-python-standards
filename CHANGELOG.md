@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-07-06
+
+### Added
+
+- 虚拟环境规范（pipenv、venv、poetry）
+- 强调不要用全局 pip 安装第三方库
+- 添加 pipenv install、pipenv run 等命令的最佳实践
+
 ## [2.0.0] - 2026-07-06
 
 ### Changed
