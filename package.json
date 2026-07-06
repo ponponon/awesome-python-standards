@@ -1,7 +1,7 @@
 {
   "name": "awesome-python-standards",
-  "version": "1.0.0",
-  "description": "Python 开发规范 Agent Skill - 类型注解、Pydantic 数据建模、代码风格",
+  "version": "2.0.0",
+  "description": "Python 现代开发规范 - 类型注解、Pydantic、FastAPI、Loguru 最佳实践",
   "type": "module",
   "main": "skills/awesome-python-standards/SKILL.md",
   "files": [
@@ -19,18 +19,14 @@
   "keywords": [
     "python",
     "typing",
+    "type-hints",
     "pydantic",
     "fastapi",
-    "sqlmodel",
-    "agent-skill",
-    "claude",
-    "cursor",
-    "opencode",
-    "codex",
-    "gemini",
-    "ai",
+    "loguru",
+    "best-practices",
     "coding-standards",
-    "best-practices"
+    "python310",
+    "agent-skill"
   ],
   "author": "ponponon <1729303158@qq.com>",
   "license": "MIT",
