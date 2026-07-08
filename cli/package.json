@@ -1,13 +1,14 @@
 {
   "name": "awesome-python-standards-cli",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "CLI to install Awesome Python Standards skill for AI coding assistants",
   "type": "module",
   "bin": {
     "aps": "./dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "skills"
   ],
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target node",

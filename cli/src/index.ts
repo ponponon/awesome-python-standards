@@ -60,6 +60,10 @@ program
       const SKILL_NAME = 'awesome-python-standards';
       const homeDir = process.env.HOME || process.env.USERPROFILE;
 
+      // Get the directory where this CLI script is located
+      const scriptDir = path.dirname(new URL(import.meta.url).pathname);
+      const sourceSkillDir = path.join(scriptDir, '..', 'skills', SKILL_DIR);
+
       switch (selectedPlatform.value) {
         case 'claude':
           spinner.text = 'Installing for Claude Code...';
@@ -67,7 +71,7 @@ program
           if (!fs.existsSync(claudeSkillsDir)) {
             fs.mkdirSync(claudeSkillsDir, { recursive: true });
           }
-          execSync(`git clone ${GITHUB_URL} ${path.join(claudeSkillsDir, SKILL_DIR)}`, { stdio: 'pipe' });
+          execSync(`cp -r "${sourceSkillDir}" "${path.join(claudeSkillsDir, SKILL_DIR)}"`, { stdio: 'pipe' });
           break;
 
         case 'opencode':
@@ -76,7 +80,7 @@ program
           if (!fs.existsSync(opencodeSkillsDir)) {
             fs.mkdirSync(opencodeSkillsDir, { recursive: true });
           }
-          execSync(`git clone ${GITHUB_URL} ${path.join(opencodeSkillsDir, SKILL_DIR)}`, { stdio: 'pipe' });
+          execSync(`cp -r "${sourceSkillDir}" "${path.join(opencodeSkillsDir, SKILL_DIR)}"`, { stdio: 'pipe' });
           break;
 
         case 'codex':
@@ -85,7 +89,7 @@ program
           if (!fs.existsSync(codexSkillsDir)) {
             fs.mkdirSync(codexSkillsDir, { recursive: true });
           }
-          execSync(`git clone ${GITHUB_URL} ${path.join(codexSkillsDir, SKILL_DIR)}`, { stdio: 'pipe' });
+          execSync(`cp -r "${sourceSkillDir}" "${path.join(codexSkillsDir, SKILL_DIR)}"`, { stdio: 'pipe' });
           break;
 
         case 'cursor':
@@ -94,7 +98,7 @@ program
           if (!fs.existsSync(cursorSkillsDir)) {
             fs.mkdirSync(cursorSkillsDir, { recursive: true });
           }
-          execSync(`git clone ${GITHUB_URL} ${path.join(cursorSkillsDir, SKILL_DIR)}`, { stdio: 'pipe' });
+          execSync(`cp -r "${sourceSkillDir}" "${path.join(cursorSkillsDir, SKILL_DIR)}"`, { stdio: 'pipe' });
           break;
 
         case 'gemini':
@@ -103,7 +107,7 @@ program
           if (!fs.existsSync(geminiSkillsDir)) {
             fs.mkdirSync(geminiSkillsDir, { recursive: true });
           }
-          execSync(`git clone ${GITHUB_URL} ${path.join(geminiSkillsDir, SKILL_DIR)}`, { stdio: 'pipe' });
+          execSync(`cp -r "${sourceSkillDir}" "${path.join(geminiSkillsDir, SKILL_DIR)}"`, { stdio: 'pipe' });
           break;
 
         case 'copilot':
