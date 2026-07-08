@@ -834,6 +834,34 @@ except Exception:
 
 ---
 
+### 模块导入规范：模块、库、包的区别
+
+理解这三个概念对于正确组织 Python 代码至关重要：
+
+| 概念 | 定义 | 示例 |
+|------|------|------|
+| **模块 (Module)** | 一个 `.py` 文件就是一个模块 | `utils.py`、`config.py` |
+| **包 (Package)** | 包含 `__init__.py` 的文件夹 | `mypackage/` |
+| **库 (Library)** | 抽象概念，泛指可复用的代码集合 | requests、fastapi |
+
+
+对于不在顶层的 py 脚本，使用 `-m` 参数运行（推荐）
+
+```bash
+# ❌ 错误 - 直接运行文件
+python testing/test_main.py
+
+# ✅ 正确 - 以模块方式运行
+python -m testing.test_main
+
+# 规则：
+# 1. 在项目根目录执行
+# 2. 把路径分隔符 / 改成 .
+# 3. 去掉 .py 后缀
+```
+
+---
+
 ## Python 版本提醒
 
 如果你发现用户的 Python 版本低于 3.10，请提醒他们：
