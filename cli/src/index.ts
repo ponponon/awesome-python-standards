@@ -48,7 +48,11 @@ program
       process.exit(0);
     }
 
-    const selectedPlatform = PLATFORMS[platform];
+    const selectedPlatform = PLATFORMS.find(p => p.value === platform);
+    if (!selectedPlatform) {
+      console.log(chalk.red('\nInvalid platform selected.'));
+      process.exit(1);
+    }
     const spinner = ora(`Installing for ${selectedPlatform.name}...`).start();
 
     try {
