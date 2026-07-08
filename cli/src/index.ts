@@ -58,70 +58,81 @@ program
     try {
       const SKILL_DIR = 'awesome-python-standards';
       const SKILL_NAME = 'awesome-python-standards';
+      const homeDir = process.env.HOME || process.env.USERPROFILE;
 
       switch (selectedPlatform.value) {
         case 'claude':
           spinner.text = 'Installing for Claude Code...';
-          console.log(chalk.blue('\nRun the following command in Claude Code:'));
-          console.log(chalk.white(`\n  /plugin install ${GITHUB_URL}\n`));
-          console.log(chalk.gray('Or manually clone to ~/.claude/skills/'));
+          const claudeSkillsDir = path.join(homeDir, '.claude', 'skills');
+          if (!fs.existsSync(claudeSkillsDir)) {
+            fs.mkdirSync(claudeSkillsDir, { recursive: true });
+          }
+          execSync(`git clone ${GITHUB_URL} ${path.join(claudeSkillsDir, SKILL_DIR)}`, { stdio: 'pipe' });
           break;
 
         case 'opencode':
           spinner.text = 'Installing for OpenCode...';
-          console.log(chalk.blue('\nOption 1: Add to opencode.json plugin array:'));
-          console.log(chalk.white(`\n  "plugin": ["${GITHUB_URL}"]\n`));
-          console.log(chalk.blue('Option 2: Clone to skills directory:'));
-          console.log(chalk.white(`\n  git clone ${GITHUB_URL} ~/.opencode/skills/${SKILL_DIR}\n`));
+          const opencodeSkillsDir = path.join(homeDir, '.opencode', 'skills');
+          if (!fs.existsSync(opencodeSkillsDir)) {
+            fs.mkdirSync(opencodeSkillsDir, { recursive: true });
+          }
+          execSync(`git clone ${GITHUB_URL} ${path.join(opencodeSkillsDir, SKILL_DIR)}`, { stdio: 'pipe' });
           break;
 
         case 'codex':
           spinner.text = 'Installing for Codex CLI...';
-          console.log(chalk.blue('\nRun the following in Codex CLI:'));
-          console.log(chalk.white('\n  /plugins'));
-          console.log(chalk.white(`  Search: ${SKILL_NAME}\n`));
+          const codexSkillsDir = path.join(homeDir, '.codex', 'skills');
+          if (!fs.existsSync(codexSkillsDir)) {
+            fs.mkdirSync(codexSkillsDir, { recursive: true });
+          }
+          execSync(`git clone ${GITHUB_URL} ${path.join(codexSkillsDir, SKILL_DIR)}`, { stdio: 'pipe' });
           break;
 
         case 'cursor':
           spinner.text = 'Installing for Cursor...';
-          console.log(chalk.blue('\nIn Cursor Agent chat, run:'));
-          console.log(chalk.white(`\n  /add-plugin ${SKILL_NAME}\n`));
-          console.log(chalk.gray('Or manually clone to ~/.cursor/skills/'));
+          const cursorSkillsDir = path.join(homeDir, '.cursor', 'skills');
+          if (!fs.existsSync(cursorSkillsDir)) {
+            fs.mkdirSync(cursorSkillsDir, { recursive: true });
+          }
+          execSync(`git clone ${GITHUB_URL} ${path.join(cursorSkillsDir, SKILL_DIR)}`, { stdio: 'pipe' });
           break;
 
         case 'gemini':
           spinner.text = 'Installing for Gemini CLI...';
-          console.log(chalk.blue('\nRun the following command:'));
-          console.log(chalk.white(`\n  gemini extensions install ${GITHUB_URL}\n`));
-          console.log(chalk.gray('Or manually clone to ~/.gemini/skills/'));
+          const geminiSkillsDir = path.join(homeDir, '.gemini', 'skills');
+          if (!fs.existsSync(geminiSkillsDir)) {
+            fs.mkdirSync(geminiSkillsDir, { recursive: true });
+          }
+          execSync(`git clone ${GITHUB_URL} ${path.join(geminiSkillsDir, SKILL_DIR)}`, { stdio: 'pipe' });
           break;
 
         case 'copilot':
           spinner.text = 'Installing for GitHub Copilot CLI...';
-          console.log(chalk.blue('\nRun the following commands:'));
+          console.log(chalk.yellow('\nCopilot CLI requires manual marketplace setup:'));
           console.log(chalk.white('\n  copilot plugin marketplace add obra/superpowers-marketplace'));
           console.log(chalk.white(`  copilot plugin install ${SKILL_NAME}@superpowers-marketplace\n`));
           break;
 
         case 'droid':
           spinner.text = 'Installing for Factory Droid...';
-          console.log(chalk.blue('\nRun the following commands:'));
+          console.log(chalk.yellow('\nFactory Droid requires manual marketplace setup:'));
           console.log(chalk.white(`\n  droid plugin marketplace add ${GITHUB_URL}`));
           console.log(chalk.white(`  droid plugin install ${SKILL_NAME}@${SKILL_NAME}\n`));
           break;
 
         case 'roo':
           spinner.text = 'Installing for Roo Code...';
-          console.log(chalk.blue(`\nSearch for "${SKILL_NAME}" in the Roo Code plugin marketplace.\n`));
+          console.log(chalk.yellow(`\nSearch for "${SKILL_NAME}" in the Roo Code plugin marketplace.\n`));
           break;
 
         case 'trae':
           spinner.text = 'Installing for TRAE...';
-          console.log(chalk.blue('\nRefer to TRAE documentation for plugin installation.\n'));
+          console.log(chalk.yellow('\nRefer to TRAE documentation for plugin installation.\n'));
           break;
       }
 
-      spinner.succeed(chalk.green('Installation instructions displayed!'));
+      const installPath = path.join(homeDir, `.${selectedPlatform.value}`, 'skills', SKILL_DIR);
+      spinner.succeed(chalk.green(`Installed to ${installPath}`));
       
       console.log(chalk.bold('\n📖 Usage:'));
       console.log(chalk.white('  Ask your AI assistant: "帮我按照 Python 后端开发规范写代码"'));

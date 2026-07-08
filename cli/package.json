@@ -1,6 +1,6 @@
 {
   "name": "awesome-python-standards-cli",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "CLI to install Awesome Python Standards skill for AI coding assistants",
   "type": "module",
   "bin": {
