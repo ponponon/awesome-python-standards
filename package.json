@@ -1,6 +1,6 @@
 {
   "name": "awesome-python-standards",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Python 现代开发规范 - 类型注解、Pydantic、虚拟环境、FastAPI、Loguru 最佳实践",
   "type": "module",
   "main": "skills/awesome-python-standards/SKILL.md",

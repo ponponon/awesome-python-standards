@@ -155,6 +155,8 @@ npm publish --registry https://registry.npmjs.org/
 
 ### 5. 版本一致性检查清单
 
+**重要：npm 和 GitHub Release 必须保持版本一致！**
+
 发布前确认：
 
 - [ ] 根 `package.json` 版本号已更新
@@ -163,9 +165,24 @@ npm publish --registry https://registry.npmjs.org/
 - [ ] `README.md` 版本 badge 可选更新
 - [ ] `README.zh-CN.md` 与 README.md 保持同步
 - [ ] 本地测试通过（`cd cli && bun run build`）
-- [ ] Git tag 已创建
-- [ ] GitHub Release 已发布
-- [ ] npm 包已发布
+- [ ] Git tag 已创建（与版本号一致，如 `v1.1.0`）
+- [ ] **npm 包已发布**（版本号与 tag 一致）
+- [ ] **GitHub Release 已发布**（版本号与 tag 和 npm 一致）
+
+**发布顺序要求：**
+1. 先提交代码并创建 tag
+2. 推送到 GitHub
+3. 发布 npm 包
+4. 创建 GitHub Release
+
+**禁止：** npm 版本与 GitHub Release/tag 不一致
+
+**发布后验证命令：**
+```bash
+# 检查版本一致性
+npm view awesome-python-standards-cli version  # npm 版本
+gh release list --limit 1                       # GitHub Release 版本
+```
 
 ## 代码规范
 

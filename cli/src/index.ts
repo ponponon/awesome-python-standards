@@ -13,7 +13,7 @@ const program = new Command();
 program
   .name('aps')
   .description('CLI to install Awesome Python Standards skill for AI coding assistants')
-  .version('1.0.0');
+  .version('1.1.0');
 
 const PLATFORMS = [
   { name: 'Claude Code', value: 'claude' },
@@ -56,58 +56,63 @@ program
     const spinner = ora(`Installing for ${selectedPlatform.name}...`).start();
 
     try {
+      const SKILL_DIR = 'awesome-python-standards';
+      const SKILL_NAME = 'awesome-python-standards';
+
       switch (selectedPlatform.value) {
         case 'claude':
           spinner.text = 'Installing for Claude Code...';
           console.log(chalk.blue('\nRun the following command in Claude Code:'));
-          console.log(chalk.white(`\n  /plugin install awesome-python-standards@git+${GITHUB_URL}.git\n`));
+          console.log(chalk.white(`\n  /plugin install ${GITHUB_URL}\n`));
+          console.log(chalk.gray('Or manually clone to ~/.claude/skills/'));
           break;
 
         case 'opencode':
           spinner.text = 'Installing for OpenCode...';
-          const opencodeConfig = {
-            plugin: [`awesome-python-standards@git+${GITHUB_URL}.git`]
-          };
-          console.log(chalk.blue('\nAdd this to your opencode.json:'));
-          console.log(chalk.white(`\n${JSON.stringify(opencodeConfig, null, 2)}\n`));
+          console.log(chalk.blue('\nOption 1: Add to opencode.json plugin array:'));
+          console.log(chalk.white(`\n  "plugin": ["${GITHUB_URL}"]\n`));
+          console.log(chalk.blue('Option 2: Clone to skills directory:'));
+          console.log(chalk.white(`\n  git clone ${GITHUB_URL} ~/.opencode/skills/${SKILL_DIR}\n`));
           break;
 
         case 'codex':
           spinner.text = 'Installing for Codex CLI...';
           console.log(chalk.blue('\nRun the following in Codex CLI:'));
           console.log(chalk.white('\n  /plugins'));
-          console.log(chalk.white('  Search: awesome-python-standards\n'));
+          console.log(chalk.white(`  Search: ${SKILL_NAME}\n`));
           break;
 
         case 'cursor':
           spinner.text = 'Installing for Cursor...';
           console.log(chalk.blue('\nIn Cursor Agent chat, run:'));
-          console.log(chalk.white('\n  /add-plugin awesome-python-standards\n'));
+          console.log(chalk.white(`\n  /add-plugin ${SKILL_NAME}\n`));
+          console.log(chalk.gray('Or manually clone to ~/.cursor/skills/'));
           break;
 
         case 'gemini':
           spinner.text = 'Installing for Gemini CLI...';
           console.log(chalk.blue('\nRun the following command:'));
           console.log(chalk.white(`\n  gemini extensions install ${GITHUB_URL}\n`));
+          console.log(chalk.gray('Or manually clone to ~/.gemini/skills/'));
           break;
 
         case 'copilot':
           spinner.text = 'Installing for GitHub Copilot CLI...';
           console.log(chalk.blue('\nRun the following commands:'));
           console.log(chalk.white('\n  copilot plugin marketplace add obra/superpowers-marketplace'));
-          console.log(chalk.white('  copilot plugin install awesome-python-standards@superpowers-marketplace\n'));
+          console.log(chalk.white(`  copilot plugin install ${SKILL_NAME}@superpowers-marketplace\n`));
           break;
 
         case 'droid':
           spinner.text = 'Installing for Factory Droid...';
           console.log(chalk.blue('\nRun the following commands:'));
           console.log(chalk.white(`\n  droid plugin marketplace add ${GITHUB_URL}`));
-          console.log(chalk.white('  droid plugin install awesome-python-standards@awesome-python-standards\n'));
+          console.log(chalk.white(`  droid plugin install ${SKILL_NAME}@${SKILL_NAME}\n`));
           break;
 
         case 'roo':
           spinner.text = 'Installing for Roo Code...';
-          console.log(chalk.blue('\nSearch for "awesome-python-standards" in the Roo Code plugin marketplace.\n'));
+          console.log(chalk.blue(`\nSearch for "${SKILL_NAME}" in the Roo Code plugin marketplace.\n`));
           break;
 
         case 'trae':
