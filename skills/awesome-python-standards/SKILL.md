@@ -185,6 +185,56 @@ pip install pyright
 pyright your_file.py
 ```
 
+### datetime 使用规范（重要！）
+
+**⚠️ `datetime.utcnow()` 已废弃！不要使用！**
+
+```python
+from datetime import datetime, timezone
+
+# ❌ 错误 - utcnow() 已废弃，返回 naive datetime
+now = datetime.utcnow()
+
+# ✅ 正确 - 使用 datetime.now(timezone.utc)
+now = datetime.now(timezone.utc)
+
+# ✅ 正确 - 获取本地时间（带时区）
+from datetime import datetime
+now = datetime.now().astimezone()
+
+# ✅ 正确 - 创建指定时区的时间
+from datetime import datetime, timezone, timedelta
+
+jst = timezone(timedelta(hours=9))
+now = datetime.now(jst)
+```
+
+**为什么不要用 `utcnow()`？**
+- 返回的是 naive datetime（没有时区信息）
+- 容易导致时区相关的 bug
+- Python 3.12+ 已正式废弃此方法
+- 使用 `datetime.now(timezone.utc)` 更安全、更明确
+
+**在 Pydantic 模型中使用 datetime：**
+
+```python
+from pydantic import BaseModel, Field
+from datetime import datetime, timezone
+
+class Event(BaseModel):
+    """事件模型"""
+    
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description='创建时间，自动设置为 UTC 时间'
+    )
+    
+    updated_at: datetime | None = Field(
+        None,
+        description='更新时间'
+    )
+```
+
 ---
 
 ## Pydantic 规范
